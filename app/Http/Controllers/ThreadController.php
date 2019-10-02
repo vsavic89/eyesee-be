@@ -19,7 +19,7 @@ class ThreadController extends Controller
     }
 
     public function index()
-    {        
+    {                
         $threads = Thread::all();
         
         return $threads;
@@ -48,7 +48,7 @@ class ThreadController extends Controller
             $thread = new Thread();
             $thread->title = $request['title'];
             $thread->content = $request['content'];
-            $thread->user_id = $request['user_id'];
+            $thread->user_id = auth()->getUser()->id;
             $thread->save();
 
             return $thread;
