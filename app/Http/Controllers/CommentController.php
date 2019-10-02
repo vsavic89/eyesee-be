@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Thread;
+use App\Comment;
 
 class CommentController extends Controller
 {
@@ -11,6 +13,29 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function __construct()
+    {
+        $this->middleware('auth', ['only' => ['store']]);   
+    }
+
+    public function MarkAsVisible($id)
+    {
+        $comment = Comment::findOrFail($id);
+        $thread = Thread::findOrFail($comment->thread_id);        
+        if($comment->user_id === $thread->user_id)
+        {
+            $comment->visible = true;
+            $comment->save();
+
+            return $comment;
+        }else{
+            return response()->json([
+                'message' => 'Can not set this comment to visible because current user is not the same as one who created the thread.'
+            ]);
+        }
+    }
+
     public function index()
     {
         $comments = Comment::all();
@@ -76,7 +101,7 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = Comment::findOrFail($id);        
         $comment->content = $request['content'];
         $comment->parent_comment_id = $request['parent_comment_id'];
         $comment->user_id = $request['user_id'];

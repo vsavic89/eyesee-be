@@ -11,3 +11,8 @@
 |
 */
 Route::get('/');
+Route::post('/login', 'Auth\LoginController@authenticate');  
+Route::post('/register', 'Auth\RegisterController@register');  
+Route::get('/threads', 'ThreadController@index');
+Route::post('/threads/create', 'ThreadController@store');
+Route::put('/threads/{id}', 'ThreadController@update');
