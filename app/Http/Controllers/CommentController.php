@@ -19,9 +19,9 @@ class CommentController extends Controller
         // $this->middleware('auth', ['only' => ['store']]);   
     }
 
-    public function MarkAsVisible($id)
-    {        
-        $comment = Comment::findOrFail($id);
+    public function MarkAsVisible(Request $request)
+    {                
+        $comment = Comment::findOrFail($request['commentId']);
         $thread = Thread::findOrFail($comment->thread_id);        
         if($comment->user_id === $thread->user_id)
         {
@@ -64,8 +64,11 @@ class CommentController extends Controller
             $comment = new Comment();
             $comment->content = $request['content'];
             $comment->parent_comment_id = $request['parent_comment_id'];
-            $comment->user_id = $request['user_id'];
+            $comment->thread_id = $request['thread_id'];
+            $comment->user_id = auth()->getUser()->id;
             $comment->save();
+
+            return $comment;
         }else{
             return response()->json([
                 'message' => 'Can not add comment. User is not logged in.'
@@ -105,11 +108,9 @@ class CommentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
+    {        
         $comment = Comment::findOrFail($id);        
-        $comment->content = $request['content'];
-        $comment->parent_comment_id = $request['parent_comment_id'];
-        $comment->user_id = $request['user_id'];
+        $comment->content = $request['content'];                   
         $comment->save();
     }
 

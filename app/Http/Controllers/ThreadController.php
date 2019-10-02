@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Thread;
+use DateTime;
 
 class ThreadController extends Controller
 {
@@ -95,9 +96,11 @@ class ThreadController extends Controller
         if(auth()->check())
         {
             $userID = auth()->getUser()->id;
+        
             $thread = Thread::findOrFail($id);        
+        
             if($userID === $thread->user_id)
-            {        
+            {    
                 $date1 = new DateTime($thread->created_at);
                 $date2 = new DateTime();
 
@@ -111,6 +114,8 @@ class ThreadController extends Controller
                     $thread->title = $request['title'];
                     $thread->content = $request['content'];                
                     $thread->save();
+
+                    return $thread;
                 }else{
                     return response()->json([
                         'message' => 'Can not edit thread. The creation time of the thread is more than 6h.'
