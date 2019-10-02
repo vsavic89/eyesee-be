@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Thread;
 use DateTime;
+use App\APIParameters;
 
 class ThreadController extends Controller
 {
@@ -14,16 +15,25 @@ class ThreadController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+    private $baseURL;
+
     public function __construct()
     {
         //  $this->middleware('auth', ['only' => ['store']]);   
+        $api = new APIParameters();
+        $this->baseURL = $api->getBaseAPIURL();
     }
 
     public function index()
     {                
-        $threads = Thread::all();
-        
-        return $threads;
+        $threads = Thread::all();                    
+
+        $s = '<h1><u>Threads</u></h1>';
+        foreach($threads as $thread)
+        {
+            $s .= '<br /><p><a href="'.$this->baseURL.'threads/'.$thread->id.'"/>'.$thread->title.'</p>';
+        }        
+        return view('welcome', compact('s'));
     }
 
     /**
@@ -52,7 +62,8 @@ class ThreadController extends Controller
             $thread->user_id = auth()->getUser()->id;
             $thread->save();
 
-            return $thread;
+            $s = '<h1>Thread created!</h1>';
+            return view('welcome', compact('s'));
         }else{
             return response()->json([
                 'Can not add thread. User is not logged in.'
@@ -68,7 +79,7 @@ class ThreadController extends Controller
      */
     public function show($id)
     {
-        $thread = Thread::findOrFail($id)->with('comments')->get();        
+        $thread = Thread::findOrFail($id);        
         
         return $thread;
     }
@@ -115,7 +126,9 @@ class ThreadController extends Controller
                     $thread->content = $request['content'];                
                     $thread->save();
 
-                    return $thread;
+                    $s = '<h1>Thread successfully updated!</h1>';
+
+                    return view('welcome', compact('s'));
                 }else{
                     return response()->json([
                         'message' => 'Can not edit thread. The creation time of the thread is more than 6h.'

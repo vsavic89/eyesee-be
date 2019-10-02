@@ -28,7 +28,8 @@ class CommentController extends Controller
             $comment->visible = true;
             $comment->save();
 
-            return $comment;
+            $s = '<h1>Comment is now visible!</h1>';
+            return view('welcome', compact('s'));
         }else{
             return response()->json([
                 'message' => 'Can not set this comment to visible because current user is not the same as one who created the thread.'
@@ -68,7 +69,8 @@ class CommentController extends Controller
             $comment->user_id = auth()->getUser()->id;
             $comment->save();
 
-            return $comment;
+            $s = '<h1>Comment is added!</h1>';
+            return view('welcome', compact('s'));
         }else{
             return response()->json([
                 'message' => 'Can not add comment. User is not logged in.'
@@ -112,6 +114,9 @@ class CommentController extends Controller
         $comment = Comment::findOrFail($id);        
         $comment->content = $request['content'];                   
         $comment->save();
+
+        $s = '<h1>Comment is edited!</h1>';
+        return view('welcome', compact('s'));
     }
 
     /**
