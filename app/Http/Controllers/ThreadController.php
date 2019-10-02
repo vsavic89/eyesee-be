@@ -15,7 +15,7 @@ class ThreadController extends Controller
 
     public function __construct()
     {
-         $this->middleware('auth', ['only' => ['store']]);   
+        //  $this->middleware('auth', ['only' => ['store']]);   
     }
 
     public function index()
@@ -43,13 +43,20 @@ class ThreadController extends Controller
      */
     public function store(Request $request)
     {
-        $thread = new Thread();
-        $thread->title = $request['title'];
-        $thread->content = $request['content'];
-        $thread->user_id = $request['user_id'];
-        $thread->save();
+        if (auth()->check())
+        {
+            $thread = new Thread();
+            $thread->title = $request['title'];
+            $thread->content = $request['content'];
+            $thread->user_id = $request['user_id'];
+            $thread->save();
 
-        return $thread;
+            return $thread;
+        }else{
+            return response()->json([
+                'Can not add thread. User is not logged in.'
+            ]);
+        }
     }
 
     /**
@@ -84,33 +91,39 @@ class ThreadController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        $thread = Thread::findOrFail($id);
-        if($thread->user_id === $request['user_id'])
+    {        
+        if(auth()->check())
         {
+            $userID = auth()->getUser()->id;
+            $thread = Thread::findOrFail($id);        
+            if($userID === $thread->user_id)
+            {        
+                $date1 = new DateTime($thread->created_at);
+                $date2 = new DateTime();
 
-            $date1 = new DateTime($thread->created_at);
-            $date2 = new DateTime();
+                $diff = $date2->diff($date1);
 
-            $diff = $date2->diff($date1);
+                $hours = $diff->h;
+                $hours = $hours + ($diff->days*24);
 
-            $hours = $diff->h;
-            $hours = $hours + ($diff->days*24);
-
-            if($hours <= 6)
-            {
-                $thread->title = $request['title'];
-                $thread->content = $request['content'];
-                // $thread->user_id = $request['user_id'];
-                $thread->save();
+                if($hours <= 6)
+                {
+                    $thread->title = $request['title'];
+                    $thread->content = $request['content'];                
+                    $thread->save();
+                }else{
+                    return response()->json([
+                        'message' => 'Can not edit thread. The creation time of the thread is more than 6h.'
+                    ]);
+                }
             }else{
-                return response()->json([
-                    'message' => 'Can not edit thread. The creation time of the thread is more than 6h.'
+                return response()->json([                
+                    'message' => 'Can not edit thread. You are not the user who wrote the thread.'
                 ]);
             }
         }else{
-            return response()->json([                
-                'message' => 'Can not edit thread. You are not the user who wrote the thread.'
+            return response()->json([
+                'message' => 'User must be logged in order to edit the thread.'
             ]);
         }
     }

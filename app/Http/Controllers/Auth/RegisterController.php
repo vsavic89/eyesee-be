@@ -69,4 +69,22 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
+
+    public function store()
+    {
+        $this->validate(request(), User::STORE_RULES);
+        $user = new User;
+        $user->name = request('name');
+        $user->email = request('email');
+        $user->password = request('password');
+        if (
+                ($user->password) === (request('confirmation_password'))
+            )
+        {
+            $user->password = bcrypt(request('password'));
+            $user->save();             
+            auth()->login($user);             
+        }
+        return redirect()->route('/');        
+    }
 }

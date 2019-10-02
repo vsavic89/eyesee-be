@@ -11,8 +11,11 @@
 |
 */
 Route::get('/');
-Route::post('/login', 'Auth\LoginController@authenticate');  
+Route::post('/login', 'Auth\LoginController@store');  
 Route::post('/register', 'Auth\RegisterController@register');  
 Route::get('/threads', 'ThreadController@index');
 Route::post('/threads/create', 'ThreadController@store');
+Route::post('/threads/{id}/comment/create', 'CommentController@store');
+Route::post('/threads/{id}/comment/{id}/MarkAsVisible', 'CommentController@MarkAsVisible');
+Route::put('/threads/{id}/comment/{id}', 'CommentController@update');
 Route::put('/threads/{id}', 'ThreadController@update');

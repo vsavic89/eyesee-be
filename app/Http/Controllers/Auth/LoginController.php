@@ -36,4 +36,14 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+    public function store()
+    {
+        if(!auth()->attempt(request(['email','password'])))
+        {
+             return back()->withErrors([
+                 'message' => 'Bad credentials. Please try again.'
+             ]);
+        }        
+        return redirect()->route('/');
+    }
 }
