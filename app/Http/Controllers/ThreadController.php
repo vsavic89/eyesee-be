@@ -67,8 +67,8 @@ class ThreadController extends Controller
      */
     public function show($id)
     {
-        $thread = Thread::findOrFail($id);
-
+        $thread = Thread::findOrFail($id)->with('comments')->get();        
+        
         return $thread;
     }
 
