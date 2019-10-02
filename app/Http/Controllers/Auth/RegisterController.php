@@ -75,16 +75,11 @@ class RegisterController extends Controller
         $this->validate(request(), User::STORE_RULES);
         $user = new User;
         $user->name = request('name');
-        $user->email = request('email');
-        $user->password = request('password');
-        if (
-                ($user->password) === (request('confirmation_password'))
-            )
-        {
-            $user->password = bcrypt(request('password'));
-            $user->save();             
-            auth()->login($user);             
-        }
+        $user->email = request('email');               
+        $user->password = bcrypt(request('password'));
+        $user->save();             
+        auth()->login($user);             
+    
         return redirect()->route('/');        
     }
 }

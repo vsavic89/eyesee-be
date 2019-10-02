@@ -11,9 +11,9 @@ class User extends Authenticatable
     use Notifiable;
 
     const STORE_RULES = [
-        'name' => 'required',
-        'email' => 'required|email',
-        'password' => 'required|min:8'
+        'name' => 'required|max:255',
+        'email' => 'required|email|max:255|unique:users',
+        'password' => 'required|confirmed|min:8',
     ];
 
     /**
