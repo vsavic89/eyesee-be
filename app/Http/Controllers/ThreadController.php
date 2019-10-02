@@ -79,9 +79,21 @@ class ThreadController extends Controller
      */
     public function show($id)
     {
-        $thread = Thread::findOrFail($id);        
+        $thread = Thread::findOrFail($id);  
+
+        $s = '<h1><u>Thread</u></h1>';
+        $s .= '<br /><p>Thread id: ' . $thread->id . '</p>';
+        $s .= '<br /><p>Thread title: '. $thread->title . '</p>';
+        $s .= '<br /><p>Thread content: '. $thread->content . '</p>';
+        $s .= '<br /><p>Thread title: '. $thread->title . '</p>';
+        $s .= '<br /><h1><u>Comments</u></h1>';
+        foreach($thread->comments as $comment)
+        {
+            $s .= '<br />Comment id: '.$comment->id;
+            $s .= '<br />Comment content: '.$comment->content;
+        }
         
-        return $thread;
+        return view('welcome', compact('s'));
     }
 
     /**
