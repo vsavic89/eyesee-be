@@ -25,14 +25,17 @@ class CreateThreadsCommentsTable extends Migration
         });
         Schema::create('comments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('parent_comment_id');
+            $table->unsignedBigInteger('parent_comment_id')->nullable();
+            $table->unsignedBigInteger('thread_id');
             $table->text('content');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
             $table->unsignedBigInteger('user_id');
+            $table->boolean('visible')->default(0);
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('parent_comment_id')->references('id')->on('comments');
+            $table->foreign('thread_id')->references('id')->on('threads');
         }); 
     }
 
